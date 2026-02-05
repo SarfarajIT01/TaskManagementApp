@@ -9,9 +9,8 @@ namespace TaskManagementApp.Controllers
     {
         private readonly AppDbContext _context;
 
-        // Simulated logged-in user (for assignment purpose)
-        private const string CurrentUserId = "U001";
-        private const string CurrentUserName = "Sarfaraj";
+        //private const string CurrentUserId = "U001";
+        //private const string CurrentUserName = "Sarfaraj";
 
         public TasksController(AppDbContext context)
         {
@@ -36,7 +35,7 @@ namespace TaskManagementApp.Controllers
             return View(await tasks.OrderByDescending(t => t.CreatedOn).ToListAsync());
         }
 
-        // GET: /Tasks/Details/5
+        // GET: /Tasks/Details/
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -53,7 +52,6 @@ namespace TaskManagementApp.Controllers
             return View();
         }
 
-        // POST: /Tasks/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TaskItem task)
@@ -61,8 +59,7 @@ namespace TaskManagementApp.Controllers
             if (ModelState.IsValid)
             {
                 task.CreatedOn = DateTime.Now;
-                //task.UpdatedOn = DateTime.Now;
-                task.CreatedById = CurrentUserId;
+                task.CreatedById = await GenerateUserIdAsync("C");
                 //task.CreatedByName = CurrentUserName;
 
                 _context.Add(task);
@@ -73,8 +70,7 @@ namespace TaskManagementApp.Controllers
             return View(task);
         }
 
-
-        // GET: /Tasks/Edit/5
+        // GET: /Tasks/Edit
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -85,50 +81,55 @@ namespace TaskManagementApp.Controllers
             return View(task);
         }
 
-        // POST: /Tasks/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, TaskItem task)
         {
             if (id != task.Id) return NotFound();
 
+            // Get existing created info
             var createdInfo = await _context.Tasks
                 .Where(c => c.Id == id)
                 .Select(c => new
                 {
+                    c.CreatedById,
                     c.CreatedByName,
                     c.CreatedOn
                 })
                 .FirstOrDefaultAsync();
 
+            if (createdInfo == null)
+                return NotFound();
 
-            task.CreatedByName = createdInfo?.CreatedByName;
-            task.CreatedOn = createdInfo!.CreatedOn;
+            task.CreatedById = createdInfo.CreatedById;
+            task.CreatedByName = createdInfo.CreatedByName;
+            task.CreatedOn = createdInfo.CreatedOn;
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    task.UpdatedOn = DateTime.Now;
-                    task.UpdatedById = CurrentUserId;
-                    //task.UpdatedByName = CurrentUserName;
+                task.UpdatedOn = DateTime.Now;
 
-                    _context.Update(task);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
+                if (task.UpdatedByName == createdInfo.CreatedByName)
                 {
-                    if (!_context.Tasks.Any(e => e.Id == task.Id))
-                        return NotFound();
-                    else
-                        throw;
+                    task.UpdatedById = createdInfo.CreatedById;
                 }
+                else
+                {
+                    task.UpdatedById = await GenerateUserIdAsync("U");
+                }
+
+                _context.Update(task);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(task);
         }
 
-        // GET: /Tasks/Delete/5
+
+
+        // GET: /Tasks/Delete
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -139,7 +140,7 @@ namespace TaskManagementApp.Controllers
             return View(task);
         }
 
-        // POST: /Tasks/Delete/5
+        // POST: /Tasks/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -150,5 +151,25 @@ namespace TaskManagementApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        private async Task<string> GenerateUserIdAsync(string prefix)
+        {
+            string? lastId = await _context.Tasks
+                .Select(t => prefix == "C" ? t.CreatedById : t.UpdatedById)
+                .Where(id => id != null && id.StartsWith(prefix))
+                .OrderByDescending(id => id)
+                .FirstOrDefaultAsync();
+
+            int nextNumber = 1;
+
+            if (!string.IsNullOrEmpty(lastId))
+            {
+                nextNumber = int.Parse(lastId.Substring(1)) + 1;
+            }
+
+            return $"{prefix}{nextNumber:D4}";
+        }
+
+
     }
 }

@@ -20,7 +20,7 @@ namespace TaskManagementApp.Models
 
         [Required]
         [MaxLength(50)]
-        public string? Status { get; set; }   // Pending, InProgress, Completed
+        public string? Status { get; set; }   
 
         [MaxLength(500)]
         public string? Remarks { get; set; }
