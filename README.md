@@ -66,7 +66,9 @@ Entity Framework Core Code First approach is used to:
 - Controllers handle business logic
 - Models represent data structure
 - Views render UI using Razor
-
+  
+Reason for choice:
+MVC-based frontend ensures simplicity, maintainability, and faster development for enterprise CRUD applications.
 ---
 
 ## 6. Build & Run Instructions
