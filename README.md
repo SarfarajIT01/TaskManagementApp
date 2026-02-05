@@ -76,8 +76,16 @@ Entity Framework Core Code First approach is used to:
 - SQL Server
 - Visual Studio 2022
 
+### Dependencies
+The project uses the following main dependencies:
+- Microsoft.EntityFrameworkCore
+- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.Tools
+- Microsoft.AspNetCore.Mvc
+All dependencies are managed via NuGet Package Manager.
+
 ### Steps
-1. Clone the repository
+1. Clone the repository `https://github.com/SarfarajIT01/TaskManagementApp.git`
 2. Update connection string in `appsettings.json`
 3. Run EF migrations:
 
