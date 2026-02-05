@@ -1,0 +1,17 @@
+﻿@model TaskManagementApp.Models.TaskItem
+
+<h2>Task Details</h2>
+
+<table class="table table-bordered">
+    <tr><th>Title</th><td>@Model.Title</td></tr>
+    <tr><th>Description</th><td>@Model.Description</td></tr>
+    <tr><th>Status</th><td>@Model.Status</td></tr>
+    <tr><th>Due Date</th><td>@Model.DueDate.ToShortDateString()</td></tr>
+    <tr><th>Remarks</th><td>@Model.Remarks</td></tr>
+    <tr><th>Created On</th><td>@Model.CreatedOn</td></tr>
+    <tr><th>Created By</th><td>@Model.CreatedByName</td></tr>
+    <tr><th>Updated On</th><td>@Model.UpdatedOn</td></tr>
+    <tr><th>Updated By</th><td>@Model.UpdatedByName</td></tr>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Back</a>

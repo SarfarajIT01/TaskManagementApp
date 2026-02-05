@@ -1,0 +1,54 @@
+﻿@model TaskManagementApp.Models.TaskItem
+
+<h2>Edit Task</h2>
+
+@* <form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    @Html.Partial("Create", Model)
+
+</form> *@
+
+<form asp-action="Edit" method="post">
+
+    <div class="mb-3">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <!-- Status & Due Date in same row -->
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label>Due Date</label>
+            <input asp-for="DueDate" type="date" class="form-control" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label>Status</label>
+            <select asp-for="Status" class="form-select">
+                <option>Pending</option>
+                <option>InProgress</option>
+                <option>Completed</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Remarks</label>
+        <textarea asp-for="Remarks" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Updated By</label>
+        <input asp-for="UpdatedByName" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+</form>
